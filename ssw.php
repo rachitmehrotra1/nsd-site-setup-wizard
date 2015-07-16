@@ -1,12 +1,12 @@
 <?php
 /*
 Plugin Name: Site Setup Wizard
-Description: Allows creating sites automatically using a simple shortcode [site_setup_wizard] placed on the site. The plugin is completely customizable.
+Description: *Imp Change with the main table for blog_id. Allows creating sites automatically using a simple shortcode [site_setup_wizard] placed on the site. The plugin is completely customizable.
 Plugin URI: http://neelshah.info
 Author: Neel Shah
 Author URI: http://neelshah.info
 License: GPL2
-Version: 0.1.3
+Version: 0.1.4
 */
 
 /* #TODO: NEEL PLEASE REMOVE THE DROP TABLE QUERY FROM DEACTIVATION HOOK FOR PRODUCTION	*/
@@ -27,7 +27,7 @@ define('SSW_PLUGINS_CATEGORIES_FOR_DATABASE', 'ssw_plugins_categories_nsd');
 define('SSW_PLUGINS_LIST_FOR_DATABASE', 'ssw_plugins_list_nsd');
 define('SSW_THEMES_CATEGORIES_FOR_DATABASE', 'ssw_themes_categories_nsd');
 define('SSW_THEMES_LIST_FOR_DATABASE', 'ssw_themes_list_nsd');
-define('SSW_VERSION', '0.1.3');
+define('SSW_VERSION', '0.1.4');
 
 
 if(!class_exists('Site_Setup_Wizard_NSD')) {
@@ -43,9 +43,9 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 			public $wpmu_pretty_plugins_plugins_list_site_option = 'wmd_prettyplugins_plugins_custom_data';
 			public $wpmu_multisite_theme_manager_categories_site_option = 'wmd_prettythemes_themes_categories';
 			public $wpmu_multisite_theme_manager_themes_list_site_option = 'wmd_prettythemes_themes_custom_data';
-		
-    	/*	Construct the plugin object	*/
-		public function __construct() {
+
+			/*	Construct the plugin object	*/
+			public function __construct() {
 
 			// Installation and Deactivation hooks
 			register_activation_hook(__FILE__, array( $this, 'ssw_activate' ) );
@@ -351,8 +351,8 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 				}
 				$plugins_categories = array('');
 			}
-			$plugin_options['plugins_categories'] = $plugins_categories;
-			$plugin_options['plugins_list'] = $plugins_list;
+			$plugin_options['plugins_categories'] = isset($plugins_categories);
+			$plugin_options['plugins_list'] = isset($plugins_list);
 
 			$this->ssw_update_plugin_options( $plugin_options );
 		}
@@ -589,7 +589,7 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 	    		$ssw_main_table = $this->ssw_main_table();
 				
 				/* Cancel current site setup Wizard Process and restart it */
-				if( $_REQUEST['ssw_cancel'] == true )
+				if( isset( $_REQUEST['ssw_cancel'] ) && $_REQUEST['ssw_cancel'] == true )
 				{
 					$wpdb->query( 'DELETE FROM '.$ssw_main_table.' WHERE user_id = '.$current_user_id.' and wizard_completed = false' );
 					// $wpdb->delete ($ssw_main_table, array('user_id'=>$current_user_id));
@@ -597,13 +597,13 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 				}
 
 				/* Resume Site Setup Wizard from where left off before */
-				if ( $_POST['ssw_cancel'] != true) {
+				if ( isset( $_POST['ssw_cancel'] ) && $_POST['ssw_cancel'] != true) {
 					$ssw_next_stage = $wpdb->get_var( 
 						'SELECT next_stage FROM '.$ssw_main_table.' WHERE user_id = '.$current_user_id.' and wizard_completed = false'
 					);
 				}
 				/* Move to the next step using this POST variable "ssw_next_stage" */
-				if( $_POST['ssw_next_stage'] != '' && $_POST['ssw_cancel'] != true ) {
+				if( isset( $_POST['ssw_next_stage'] ) && isset( $_POST['ssw_cancel'] ) && $_POST['ssw_cancel'] != true ) {
 					$ssw_next_stage = $_POST['ssw_next_stage'];
 				}
 
@@ -615,8 +615,8 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 				}
 
 				else if($ssw_next_stage =='ssw_step2') {
-					/* Wordpress Security function wp_nonce to avoid execution of same function/orject multiple times */
-					if (wp_verify_nonce($_POST['step1_nonce'], 'step1_action') ){
+					/* Wordpress Security function wp_nonce to avoid execution of same function/object multiple times */
+					if ( wp_verify_nonce($_POST['step1_nonce'], 'step1_action') ){
 						/* update fields in the database only if POST values come from previous step */
 						include(SSW_PLUGIN_DIR.'admin/step1_process.php');
 				    }
@@ -624,8 +624,8 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 				}
 
 				else if($ssw_next_stage =='ssw_step3') {
-					/* Wordpress Security function wp_nonce to avoid execution of same function/orject multiple times */
-					if (wp_verify_nonce($_POST['step2_nonce'], 'step2_action') ){
+					/* Wordpress Security function wp_nonce to avoid execution of same function/object multiple times */
+					if ( wp_verify_nonce($_POST['step2_nonce'], 'step2_action') ){
 						/* update fields in the database only if POST values come from previous step */
 						include(SSW_PLUGIN_DIR.'admin/step2_process.php');
 				    }
@@ -633,16 +633,16 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 				}
 				
 				else if($ssw_next_stage =='ssw_step4') {
-					/* Wordpress Security function wp_nonce to avoid execution of same function/orject multiple times */
-					if (wp_verify_nonce($_POST['step2_nonce'], 'step2_action') ){
+					/* Wordpress Security function wp_nonce to avoid execution of same function/object multiple times */
+					if ( wp_verify_nonce($_POST['step2_nonce'], 'step2_action') ){
 						/* update fields in the database only if POST values come from previous step */
 						include(SSW_PLUGIN_DIR.'admin/step2_process.php');
 						/* Create Actual new site based on information given */
 						/* You can include this file at any step before which you want to create new site*/
 						include(SSW_PLUGIN_DIR.'admin/create_new_site.php');
 				    }
-					/* Wordpress Security function wp_nonce to avoid execution of same function/orject multiple times */
-					if (wp_verify_nonce($_POST['step3_nonce'], 'step3_action') ){
+					/* Wordpress Security function wp_nonce to avoid execution of same function/object multiple times */
+					if ( wp_verify_nonce($_POST['step3_nonce'], 'step3_action') ){
 						/* update fields in the database only if POST values come from previous step */
 						include(SSW_PLUGIN_DIR.'admin/step3_process.php');
 				    }
@@ -650,18 +650,36 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 				}
 				
 				else if($ssw_next_stage == 'ssw_finish') {
-					/* Wordpress Security function wp_nonce to avoid execution of same function/orject multiple times */
-					if (wp_verify_nonce($_POST['step4_nonce'], 'step4_action') ){
+					/* Wordpress Security function wp_nonce to avoid execution of same function/object multiple times */
+					if ( wp_verify_nonce($_POST['step4_nonce'], 'step4_action') ){
 						/* update fields in the database only if POST values come from previous step */
 						include(SSW_PLUGIN_DIR.'admin/step4_process.php');
 				    }
-					include(SSW_PLUGIN_DIR.'wizard/finish.php');
+
+					/* Patch to skip all steps and reach finish page directly */
+					/* Wordpress Security function wp_nonce to avoid execution of same function/object multiple times */
+					if ( wp_verify_nonce($_POST['step2_nonce'], 'step2_action') ){
+						/* update fields in the database only if POST values come from previous step */
+						include(SSW_PLUGIN_DIR.'admin/step2_process.php');
+
+						/* Display Skipped Finish Page before creating a site to avoid database issue */
+						include(SSW_PLUGIN_DIR.'wizard/skip_finish.php');
+
+						/* Create Actual new site based on information given */
+						/* You can include this file at any step before which you want to create new site*/
+						include(SSW_PLUGIN_DIR.'admin/create_new_site.php');
+				    }
+				    else {
+				    	/* If the wizards comes through any other steps except Step 2 it get's regular finish page */
+				    	include(SSW_PLUGIN_DIR.'wizard/finish.php');
+
+				    }
 				}
 
 				echo '</form>';
 				echo '</div>';
 				/* SSW Container for AJAX ends */
-				if (wp_verify_nonce($_POST['ssw_ajax_nonce'], 'ssw_ajax_action') ){
+				if (isset( $_POST['ssw_ajax_nonce'] ) && wp_verify_nonce($_POST['ssw_ajax_nonce'], 'ssw_ajax_action') ){
 					/* Extra wp_die is to stop ajax call from appending extra 0 to the resposne */
 					wp_die();
 				}

@@ -1,16 +1,15 @@
 <?php
 
 /* Insert from Step 1 data into SSW's table in database */
-	if( $_POST['ssw_next_stage'] != '' ) {
+	if( isset( $_POST['ssw_next_stage'] ) != '' ) {
 		/* sanitize_title_for_query sanitizes the value to make it safe for passing in to a SQL query */
 	    $site_usage = sanitize_title_for_query( $_POST['ssw_site_usage'] );
 	    $next_stage = sanitize_title_for_query( $_POST['ssw_next_stage'] );
 	    $starttime = current_time('mysql');
 	    $endtime = $starttime;
+	    $query1 = 'SELECT COUNT(*) FROM '.$ssw_main_table.' WHERE user_id ='.$current_user_id.' and wizard_completed = false'
 
-	    $previously_inserted = $wpdb->get_var( 
-	    	'SELECT COUNT(*) FROM '.$ssw_main_table.' WHERE user_id ='.$current_user_id.' and wizard_completed = false'
-	    	);
+	    $previously_inserted = $wpdb->get_var( $query1 );
 	    if( $previously_inserted == 0 ) {
 		    $result = $wpdb->query(
 		        $wpdb->prepare(

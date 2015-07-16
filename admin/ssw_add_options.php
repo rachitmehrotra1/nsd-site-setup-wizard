@@ -105,8 +105,8 @@
         'hide_plugin_category' => 'other',
         'external_plugins' => array(
             'wpmu_multisite_privacy_plugin' => true,
-            'wpmu_pretty_plugins' => true,
-            'wpmu_multisite_theme_manager' => true,
+            'wpmu_pretty_plugins' => false,
+            'wpmu_multisite_theme_manager' => false,
             'wpmu_new_blog_template' => false
             ),
         'restricted_user_roles' => array(
