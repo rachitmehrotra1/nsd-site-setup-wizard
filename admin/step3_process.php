@@ -11,6 +11,7 @@
 			'UPDATE '.$ssw_main_table.' SET template_type = \''.$template_type.'\', next_stage = \''.$next_stage.'\', 
 			endtime = \''.$endtime.'\' WHERE user_id = '.$current_user_id.' and wizard_completed = false'
         );
+        $this->ssw_sql_log($wpdb->last_error);
 	    if( is_wp_error( $result ) ) {
 	        $error_string = 'Your have not selected a proper theme, please select again!';
 	        echo '<div id="message" class="error"><p>'.$error_string.'</p></div>';

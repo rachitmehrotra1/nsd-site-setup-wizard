@@ -13,6 +13,7 @@
     $results = $wpdb->get_results( 
         'SELECT site_usage, count(*) as number_of_sites FROM '.$ssw_main_table.' WHERE site_created = 1 group by site_usage'
     );
+    $this->ssw_sql_log($wpdb->last_error);
 
     echo '<h4>Number of Sites created using Site Setup Wizard</h4>';
     echo '<p>';
@@ -27,6 +28,7 @@
     $results2 = $wpdb->get_results( 
         'SELECT site_usage, count(*) as number_of_sites FROM '.$ssw_main_table.' WHERE wizard_completed = 1 group by site_usage'
     );
+    $this->ssw_sql_log($wpdb->last_error);
 
     echo '<h4>Number of Sites created using Site Setup Wizard and all steps of wizard were completed</h4>';
     echo '<p>';

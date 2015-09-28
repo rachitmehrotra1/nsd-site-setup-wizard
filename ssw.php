@@ -245,6 +245,18 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 				SSW_ANALYTICS_PAGE_SLUG, array($this, 'ssw_analytics_page') );
 		}
 
+        /* Display all sql  errors when occurs */
+		public function ssw_sql_log( $error ) {
+           //Custom open file code for SQL
+             if($error!=NULL)
+             { $uploads = wp_upload_dir();
+                $upload_path = $uploads['basedir'];
+            $file=$upload_path.'/nsd_ssw_sql_log.log';
+                $open = fopen( $file, "a" ); 
+            $write = fputs( $open,"\n".'error at ( '.date('Y-m-d H:i:s').' '. $error); 
+                fclose($open);}
+        }
+        
 		/* Display all admin message errors when occurs */
 		public function ssw_admin_errors( $error ) {
 			if($error == 1000) {
@@ -594,6 +606,7 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 				if( $_REQUEST['ssw_cancel'] == true )
 				{
 					$wpdb->query( 'DELETE FROM '.$ssw_main_table.' WHERE user_id = '.$current_user_id.' and wizard_completed = false' );
+                    $this->ssw_sql_log($wpdb->last_error);
 					// $wpdb->delete ($ssw_main_table, array('user_id'=>$current_user_id));
 					echo 'Let\'s Create a new site again!';
 				}
@@ -603,6 +616,7 @@ if(!class_exists('Site_Setup_Wizard_NSD')) {
 					$ssw_next_stage = $wpdb->get_var( 
 						'SELECT next_stage FROM '.$ssw_main_table.' WHERE user_id = '.$current_user_id.' and wizard_completed = false'
 					);
+                    $this->ssw_sql_log($wpdb->last_error);
 					/* Applying Hotfix to avoid displaying Step 3 for issue with wizard freezing on Step 2 */
 					/*
 					if($ssw_next_stage != 'ssw_step2') {

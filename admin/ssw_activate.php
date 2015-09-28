@@ -29,6 +29,7 @@ global $wpdb;
 				endtime timestamp NOT NULL DEFAULT "0000-00-00 00:00:00",
 				PRIMARY KEY ID (ssw_id)
 				);';
+                $this->ssw_sql_log($wpdb->last_error);
 				
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			dbDelta( $sql_ssw_main_table );

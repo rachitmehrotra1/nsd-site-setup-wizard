@@ -34,6 +34,7 @@
             admin_user_id = \''.$admin_user_id.'\', path = \''.$path.'\', title = \''.$title.'\', 
             privacy = \''.$privacy.'\', next_stage = \''.$next_stage.'\', endtime = \''.$endtime.'\' WHERE user_id = '.$current_user_id.' and site_created = false and wizard_completed = false'
         );
+        $this->ssw_sql_log($wpdb->last_error);
         if ( is_wp_error( $result ) ) {
            $error_string = $result->get_error_message();
            echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';

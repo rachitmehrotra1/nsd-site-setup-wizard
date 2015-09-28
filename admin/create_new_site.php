@@ -6,6 +6,7 @@ $create_new_site = 'create_new_site';
     $results = $wpdb->get_results( 
         'SELECT admin_user_id, path, title, privacy FROM '.$ssw_main_table.' WHERE user_id = '.$current_user_id.' and site_created = false' 
     );
+$this->ssw_sql_log($wpdb->last_error);
     if ( is_wp_error( $results ) ) {
        $error_string = $results->get_error_message();
        echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
@@ -33,6 +34,7 @@ $create_new_site = 'create_new_site';
                 'UPDATE '.$ssw_main_table.' SET site_created = true, blog_id = '.$new_blog_id.', endtime = \''.$endtime.'\' 
                 WHERE user_id = '.$current_user_id.' and site_created = false and wizard_completed = false'
             );
+            $this->ssw_sql_log($wpdb->last_error);
             if ( is_wp_error( $result ) ) {
                $error_string = $result->get_error_message();
                echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
